@@ -27,7 +27,7 @@ generate_key_pdf() {
   fi
   
   # remove trailing ','
-  usage="${usage:0:-2}"
+  usage="${usage:0:${#usage}-2}"
     
   # replace last comma with 'and'
   if [[ $usage == *,* ]]; then
@@ -62,7 +62,11 @@ generate_key_pdf() {
   ln -s $1-config.tex keytemp/config.tex
   
   # call pdflatex
-  pdflatex  -jobname=$1 -interaction=batchmode -shell-escape  secretkeybackup.tex 
+  pdflatex  -jobname=$1 -interaction=batchmode -shell-escape  secretkeybackup.tex
+  ret=$?
+  if [[ $ret != 0 ]]; then
+    echo "Error generating $1.pdf. Check $1.log for Latex errors."
+  fi
   
   rm keytemp/config.tex
   
@@ -107,5 +111,5 @@ for keyline in $keylist; do
 done
 
 rm -rf *.aux
-rm -rf *.log
+#rm -rf *.log
 rm -rf keytemp
